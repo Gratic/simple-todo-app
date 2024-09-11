@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "build": "npm install",
     "dev": "concurrently \"npx tsc --watch\" nodemon",
-    "prod": "npm ci & node dist/index.js"
+    "prod": "tsc && node dist/index.js"
   },
   "keywords": [],
   "author": "",

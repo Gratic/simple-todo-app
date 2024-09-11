@@ -1,0 +1,29 @@
+name: Automated testing
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Build the project and run the tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install project dependencies and run tests
+        run: |
+          npm ci
+          npm test
+      - name: Create a zip with coverage results
+        run : |
+          zip -r coverage_result.zip coverage
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: coverage_result.zip
