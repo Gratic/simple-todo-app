@@ -1,57 +1,57 @@
 import express, { Request, Response, Router } from "express";
-import { Task } from "../models/Tasks";
+import { Task } from "../models/Task";
+import { Repository } from "../repository/Repository";
 
-const router: Router = express.Router()
+export default function(TaskRepository: Repository<Task>) {
+    const router: Router = express.Router()
 
-let tasks: Array<Task> = [
-    Task.Create_Task("Menage", "Faire le menage"),
-    Task.Create_Task("Vaisselle", "Faire la vaisselle")
-]
+    router.get("/", async (req: Request, res: Response) => {
+        const tasks = await TaskRepository.findAll();
+        res.json(Object.values(tasks));
+    })
 
-router.get("/", (req: Request, res: Response) => {
-    res.json(Object.values(tasks));
-})
+    router.get("/:id", async (req: Request<{id: string}>, res: Response) => {
+        const task = await TaskRepository.findById(req.params.id);
+        
+        if(task) res.json(task);
 
-router.get("/:id", (req: Request<{id: number}>, res: Response) => {
-    res.json(tasks.find((task) => task.id == req.params.id));
-})
+        res.status(404).json({"message": `Task with ID=${req.params.id} not found.`})
+    })
 
-router.post("/", (req: Request, res: Response) => {
-    let title: string = req.body.title;
-    let content: string = req.body.content;
+    router.post("/", async (req: Request, res: Response) => {
+        const data: Omit<Task, "id"> = {
+            "title": req.body.title,
+            "content": req.body.content,
+        };
 
-    const newTask = Task.Create_Task(title, content);
-    tasks.push(newTask);
+        const task = await TaskRepository.create(data)
+        res.status(201).json(task);
+    });
 
-    res.json(newTask);
-});
+    router.put("/:id", async (req: Request<{id: string}>, res: Response) => {
+        const data: Partial<Task> = {
+            "title": req.body.title,
+            "content": req.body.content,
+        };
 
-router.put("/:id", (req: Request<{id: number}>, res: Response) => {
-    let taskToUpdate = tasks.find((task) => task.id == req.params.id);
+        const task = await TaskRepository.update(req.params.id, data);
 
-    if (!taskToUpdate)
-    {
-        res.status(404);
-        res.json({"error": `Task with id=${req.params.id} not found.`});
-    }
-    else {
-        let title: string = req.body.title;
-        let content: string = req.body.content;
+        if (task)
+        {
+            res.json(task);
+        }
+        
+        res.status(404).json({"message": `Task with ID=${req.params.id} not found.`});
+    });
 
-        if(title && title != taskToUpdate.title)
-            taskToUpdate.title = title;
+    router.delete("/:id", async (req: Request<{id: string}>, res: Response) => {
+        if(await TaskRepository.deleteById(req.params.id))
+        {
+            res.sendStatus(204);
+        }
 
-        if (content && content != taskToUpdate.content)
-            taskToUpdate.content = content;
+        res.status(404).json({"message": `Task with ID=${req.params.id} not found.`});
+    });
 
-        res.json(taskToUpdate);
-    }
-});
-
-router.delete("/:id", (req: Request<{id: number}>, res: Response) => {
-    tasks = tasks.filter((task) => task.id != req.params.id);
-
-    res.sendStatus(200);
-});
-
-export default router;
+    return router;
+}

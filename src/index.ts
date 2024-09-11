@@ -1,6 +1,9 @@
 import makeApp from "./app";
+import taskRoute from "./controllers/TaskController";
+import { InMemoryTaskRepository } from "./repository/InMemoryTaskRepository";
 
-const app = makeApp()
+const TaskRoute = taskRoute(new InMemoryTaskRepository())
+const app = makeApp(TaskRoute)
 
 const port = 3000;
 

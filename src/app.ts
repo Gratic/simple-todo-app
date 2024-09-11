@@ -1,7 +1,6 @@
-import express, { Express, Request, Response} from "express";
-import UserRoutes from "./controllers/TaskController";
+import express, { Express, Request, Response, Router} from "express";
 
-export default function() {
+export default function(TaskRoute:Router) {
     const app: Express = express();
     app.get("/", (req: Request, res: Response) => {
         res.send("Express + TypeScript + nodemon");
@@ -10,7 +9,7 @@ export default function() {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    app.use('/v1/tasks', UserRoutes);
+    app.use('/v1/tasks', TaskRoute);
     return app;
 }
 
