@@ -3,7 +3,7 @@ import { Repository } from "./Repository";
 import { v7 as uuid } from "uuid";
 
 export class InMemoryTaskRepository implements Repository<Task> {
-    private tasks: Array<Task> = [];
+    constructor(private tasks: Array<Task> = []) {}
 
     async findAll(): Promise<Task[]> {
         return this.tasks;
