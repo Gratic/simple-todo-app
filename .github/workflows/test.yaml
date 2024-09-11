@@ -19,11 +19,11 @@ jobs:
         run: |
           npm ci
           npm test
-      - name: Create a zip with coverage results
-        run : |
-          zip -r coverage_result.zip coverage
+      # - name: Create a zip with coverage results
+      #  run : |
+      #    zip -r coverage_result.zip coverage
       - name: Archive code coverage results
         uses: actions/upload-artifact@v4
         with:
-          name: code-coverage-report
-          path: coverage_result.zip
+          name: code-coverage-report.zip
+          path: coverage/*
