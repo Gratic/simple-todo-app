@@ -1,16 +1,13 @@
-import express, { Express, Request, Response} from "express";
+import makeApp from "./app";
+import taskRoute from "./controllers/TaskController";
+import { InMemoryTaskRepository } from "./repository/InMemoryTaskRepository";
 
-const app: Express = express();
+const TaskRoute = taskRoute(new InMemoryTaskRepository())
+const app = makeApp(TaskRoute)
+
 const port = 3000;
-
-app.get("/", (req: Request, res: Response) => {
-    res.send("Express + TypeScript + nodemon");
-});
 
 app.listen(port, () => {
     console.log(`[Server] Listening server is running at http://localhost:${port}`);
 });
 
-export function for_test() {
-    return 1;
-}
