@@ -163,6 +163,18 @@ describe("Tasks v1 REST API", () => {
             expect(res.body.completedAt).toBe("date of 2");
          });
 
+         it("Should return and modify task with id 2 without changing its id when using /2 with PUT and data with id", async () => {            
+            const res = await request(app)
+            .put("/v1/tasks/2")
+            .send({
+                id: '2032',
+            });
+
+            console.log(res.body);
+ 
+            expect(res.body.id).toBe("2");
+         });
+
         it("Should return an error when modifying a task with a not string data title", async () => {
             const res = await request(app)
             .put("/v1/tasks/1")
