@@ -67,6 +67,7 @@ describe("Tasks v1 REST API", () => {
             expect(res.body.id).toBeDefined();
             expect(res.body.title).toBe("title");
             expect(res.body.content).toBe("content");
+            expect(res.body.completedAt).toBeUndefined();
         });
 
         it("Should return an error when creating a task with a not string data title", async () => {
@@ -101,7 +102,8 @@ describe("Tasks v1 REST API", () => {
                 {
                     id: "1",
                     title: "title of 1",
-                    content: "content of 1"
+                    content: "content of 1",
+                    completedAt: "date of 1",
                 },
                 {
                     id: "2",
@@ -130,6 +132,7 @@ describe("Tasks v1 REST API", () => {
             expect(res.body.id).toBe("1");
             expect(res.body.title).toBe("title of 1");
             expect(res.body.content).toBe("content of 1");
+            expect(res.body.completedAt).toBe("date of 1");
         })
 
         it("Should return and modify task with id 1 when using /1 with PUT and data", async () => {
@@ -144,6 +147,33 @@ describe("Tasks v1 REST API", () => {
            expect(res.body.title).toBe("updated title");
            expect(res.body.content).toBe("updated content");
         });
+
+        it("Should return and modify task with id 2 when using /2 with PUT and data", async () => {            
+            const res = await request(app)
+            .put("/v1/tasks/2")
+            .send({
+                 title: "updated title",
+                 content: "updated content",
+                 completedAt: "date of 2",
+            });
+ 
+            expect(res.body.id).toBe("2");
+            expect(res.body.title).toBe("updated title");
+            expect(res.body.content).toBe("updated content");
+            expect(res.body.completedAt).toBe("date of 2");
+         });
+
+         it("Should return and modify task with id 2 without changing its id when using /2 with PUT and data with id", async () => {            
+            const res = await request(app)
+            .put("/v1/tasks/2")
+            .send({
+                id: '2032',
+            });
+
+            console.log(res.body);
+ 
+            expect(res.body.id).toBe("2");
+         });
 
         it("Should return an error when modifying a task with a not string data title", async () => {
             const res = await request(app)

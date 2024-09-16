@@ -53,7 +53,8 @@ describe("InMemoryTaskRepository", () => {
                 {
                     id: "1",
                     title: "title of 1",
-                    content: "content of 1"
+                    content: "content of 1",
+                    completedAt: "date of 1",
                 },
                 {
                     id: "2",
@@ -72,6 +73,7 @@ describe("InMemoryTaskRepository", () => {
             expect(res[0].id).toBe("1");
             expect(res[0].title).toBe("title of 1");
             expect(res[0].content).toBe("content of 1");
+            expect(res[0].completedAt).toBe("date of 1");
             expect(res[1].id).toBe("2");
             expect(res[1].title).toBe("title of 2");
             expect(res[1].content).toBe("content of 2");
