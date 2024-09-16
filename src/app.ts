@@ -1,7 +1,13 @@
+import { CorsRequest } from "cors";
 import express, { Express, Request, Response, Router} from "express";
 
-export default function(TaskRoute:Router) {
+export default function(TaskRoute:Router, cors?: any) {
     const app: Express = express();
+    
+    if (cors) {
+        app.use(cors);
+    }
+
     app.get("/", (req: Request, res: Response) => {
         res.send("Express + TypeScript + nodemon");
     });
