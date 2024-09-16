@@ -66,6 +66,9 @@ export default function(TaskRepository: Repository<Task>) {
 
         const data: Partial<Task> = validatedBody.data;
 
+        if (data.completedAt === "")
+            data.completedAt = undefined;
+
         const task = await TaskRepository.update(req.params.id, data);
 
         if (task)
