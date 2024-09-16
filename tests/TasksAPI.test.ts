@@ -216,5 +216,19 @@ describe("Tasks v1 REST API", () => {
 
             expect(res.status).toBe(404);
         });
+
+        it("Should remove completedAt property when updating task has completedAt empty", async () => {
+            const before = await request(app)
+                .get("/v1/tasks/1")
+                .send();
+            
+            expect(before.body.completedAt).toBeDefined();
+
+            const res = await request(app)
+            .put("/v1/tasks/1")
+            .send({ completedAt: "" })
+            
+            expect(res.body.completedAt).toBeUndefined();
+        });
     });
 });
