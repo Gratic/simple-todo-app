@@ -14,24 +14,19 @@ export class InMemoryTaskRepository implements Repository<Task> {
     }
 
     async create(data: Omit<Task, "id">): Promise<Task> {
-        const newTask: Task = {
-            id: uuid(),
-            title: data.title,
-            content: data.content,
-        };
+        const newTask: Task = Object.assign({ id: uuid() }, data) as Task;
 
         this.tasks.push(newTask);
         
         return newTask;
     }
+    
     async update(id: string, data: Partial<Task>): Promise<Task | null> {
         let task = this.tasks.find(task => task.id == id);
 
         if (task)
         {
-            task.title = data.title ?? task.title;
-            task.content = data.content ?? task.content;
-            return task;
+           return Object.assign(task, data) as Task;
         }
 
         return null;

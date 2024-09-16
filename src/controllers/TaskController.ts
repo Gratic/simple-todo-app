@@ -1,6 +1,19 @@
 import express, { Request, Response, Router } from "express";
 import { Task } from "../models/Task";
 import { Repository } from "../repository/Repository";
+import { z } from "zod";
+
+const CreationTaskSchema = z.object({
+    title: z.string(),
+    content: z.string(),
+    completedAt: z.string().optional()
+})
+
+const UpdateTaskSchema = z.object({
+    title: z.string().optional(),
+    content: z.string().optional(),
+    completedAt: z.string().optional()
+})
 
 export default function(TaskRepository: Repository<Task>) {
     const router: Router = express.Router()
@@ -22,44 +35,36 @@ export default function(TaskRepository: Repository<Task>) {
     })
 
     router.post("/", async (req: Request, res: Response) => {
-        if (typeof req.body.title !== "string")
+        const validatedBody = CreationTaskSchema.safeParse(req.body);
+
+        if (!validatedBody.success)
         {
-            res.status(400).json({ message: "The title is not a string." });
+            res.status(400).json({
+                error: validatedBody.error.flatten().fieldErrors,
+                message: "Missing field."
+            });
             return;
         }
 
-        if (typeof req.body.content !== "string")
-        { 
-            res.status(400).json({ message: "The content is not a string." });
-            return;
-        }
-
-        const data: Omit<Task, "id"> = {
-            "title": req.body.title,
-            "content": req.body.content,
-        };
+        const data: Omit<Task, "id"> = validatedBody.data;
 
         const task = await TaskRepository.create(data)
         res.status(201).json(task);
     });
 
     router.put("/:id", async (req: Request<{id: string}>, res: Response) => {
-        if (typeof req.body.title !== "string")
+        const validatedBody = UpdateTaskSchema.safeParse(req.body);
+
+        if (!validatedBody.success)
         {
-            res.status(400).json({ message: "The title is not a string." });
+            res.status(400).json({ 
+                error: validatedBody.error.flatten().fieldErrors,
+                message: "Missing fields."
+            });
             return;
         }
 
-        if (typeof req.body.content !== "string")
-        { 
-            res.status(400).json({ message: "The content is not a string." });
-            return;
-        }
-
-        const data: Partial<Task> = {
-            "title": req.body.title,
-            "content": req.body.content,
-        };
+        const data: Partial<Task> = validatedBody.data;
 
         const task = await TaskRepository.update(req.params.id, data);
 
